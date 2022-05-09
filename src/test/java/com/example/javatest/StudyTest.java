@@ -1,10 +1,12 @@
 package com.example.javatest;
 
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.condition.*;
 
 import java.time.Duration;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.*;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class StudyTest {   // JUnit5에서는 public을 선언하지 않아도 된다.
@@ -36,6 +38,53 @@ class StudyTest {   // JUnit5에서는 public을 선언하지 않아도 된다.
     Study study = new Study(10);
     assertNotNull(study);
     System.out.println("create1");
+  }
+
+  @Test
+//  @EnabledOnOs({OS.MAC, OS.LINUX})    // OS에 따라 테스트 가능
+  @EnabledOnJre({JRE.JAVA_8, JRE.JAVA_11})    // java 버전에 따라서도 테스트 가능
+  @EnabledIfEnvironmentVariable(named = "TEST_ENV", matches = "LOCAL")    // annotation으로도 환경에 따라 테스트 가능
+  void test_environment() {
+    String testEnv = System.getenv("TEST_ENV");
+//    assumeTrue("LOCAL".equalsIgnoreCase(testEnv));
+
+    assumingThat("LOCAL".equalsIgnoreCase(testEnv), () -> {
+      System.out.println("local");
+    });
+
+    assumingThat("DEV".equalsIgnoreCase(testEnv), () -> {
+      System.out.println("DEV");
+    });
+
+    assumingThat("PROD".equalsIgnoreCase(testEnv), () -> {
+      System.out.println("PROD");
+    });
+
+    Study study = new Study(10);
+    assertNotNull(study);
+    System.out.println("create1");
+  }
+
+  @Test
+  @Tag("fast")  // Edit Configurations에서 Tags를 fast로 설정하면 fast만 실행된다.
+  void test_tag_fast() {
+    System.out.println("fast");
+  }
+
+  @Test
+  @Tag("slow")
+  void test_tag_slow() {
+    System.out.println("slow");
+  }
+
+  @FastTest
+  void test_custom_tag_fast() {
+    System.out.println("FastTest");
+  }
+
+  @SlowTest
+  void test_custom_tag_slow() {
+    System.out.println("FastTest");
   }
 
   @BeforeAll
