@@ -2,7 +2,9 @@ package com.example.javatest;
 
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.condition.*;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ParameterContext;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.aggregator.AggregateWith;
 import org.junit.jupiter.params.aggregator.ArgumentsAccessor;
@@ -18,39 +20,54 @@ import java.time.Duration;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.*;
 
-@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)   // @BeforeAll, @AfterAll에 static을 붙이지 않아도 된다.
+@ExtendWith(FindSlowTestExtension.class)
+//@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+//@TestInstance(TestInstance.Lifecycle.PER_CLASS)   // @BeforeAll, @AfterAll에 static을 붙이지 않아도 된다.
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)   // 테스트 순서 정할 때 사용. @Order로 순서를 정할 수 있다.
 class StudyTest {   // JUnit5에서는 public을 선언하지 않아도 된다.
 
-  int value = 1;    // @TestInstance(TestInstance.Lifecycle.PER_CLASS)를 사용하면 해당 변수를 어느 테스트에서 사용하든 값이 변경되지 않는다.
+  /**
+   * 원래 @Test가 붙은 메서드를 실행시킬 때에는 각각 인스턴스가 생성되어 테스트를 하기 때문에 변수값은 변하지 않는다.
+   * 그러나 @TestInstance(TestInstance.Lifecycle.PER_CLASS)를 사용하면 해당 변수를 메서드 간에 공유할 수 있어, 영향을 끼치도록 할 수 있다.
+   */
+  int value = 1;
 
+  // @ExtendWith에 선언하면 생성자를 만들지 못해 에러가 남. 그리고 유동적으로 사용하지 못하기 때문에 이 방법으로 사용 가능.
+  @RegisterExtension
+  static FindSlowTestExtension findSlowTestExtension = new FindSlowTestExtension(1000L);
+
+  @Order(2)
   @Test
+  @SlowTest
   @DisplayName("스터디 만들기")
-  void creat_new_study() {
+  void creat_new_study() throws InterruptedException {
+    Thread.sleep(1005L);
     Study study = new Study(10);
     assertAll(
       () -> assertNotNull(study),
       () -> assertEquals(StudyStatus.DRAFT, study.getStatus(), () -> "스터디를 처음 만들면 상태값이 DRAFT여야 한다."),   // lamda식을 쓰면 문자열연산을 성공시에만 하기 때문에 비용을 절감할 수 있음.
       () -> assertTrue(study.getLimit() > 0, "스터디 최대 참석 가능 인원은 0보다 커야 한다."),
-      () -> assertTimeout(Duration.ofMillis(100), () -> {
+      () -> assertTimeout(Duration.ofMillis(500), () -> {
         new Study(10);
         Thread.sleep(300);
       }),
-      () -> assertTimeoutPreemptively(Duration.ofMillis(100), () -> {
+      () -> assertTimeoutPreemptively(Duration.ofMillis(500), () -> {
         new Study(10);
         Thread.sleep(300);    // TODO ThreadLocal
       })
     );
 
     System.out.println("create");
+    System.out.println(value++);
   }
 
+  @Order(1)
   @Test
   @Disabled
   void creat_new_study_again() {
     Study study = new Study(10);
     assertNotNull(study);
-    System.out.println("create1");
+    System.out.println("create1 " + value++);
   }
 
   @Test

@@ -1,0 +1,9 @@
+# YML은 작동 안함.
+#junit:
+#  jupiter:
+#    testinstance:
+#      lifecycle:
+#        default: per_class
+#
+#    conditions:
+#      deactivate: org.junit.*DisabledCondition
