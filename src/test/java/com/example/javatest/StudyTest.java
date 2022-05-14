@@ -42,17 +42,17 @@ class StudyTest {   // JUnit5에서는 public을 선언하지 않아도 된다.
   @DisplayName("스터디 만들기")
   void creat_new_study() throws InterruptedException {
     Thread.sleep(1005L);
-    Study study = new Study(10);
+    StudyTestDto studyTestDto = new StudyTestDto(10);
     assertAll(
-      () -> assertNotNull(study),
-      () -> assertEquals(StudyStatus.DRAFT, study.getStatus(), () -> "스터디를 처음 만들면 상태값이 DRAFT여야 한다."),   // lamda식을 쓰면 문자열연산을 성공시에만 하기 때문에 비용을 절감할 수 있음.
-      () -> assertTrue(study.getLimit() > 0, "스터디 최대 참석 가능 인원은 0보다 커야 한다."),
+      () -> assertNotNull(studyTestDto),
+      () -> assertEquals(StudyStatus.DRAFT, studyTestDto.getStatus(), () -> "스터디를 처음 만들면 상태값이 DRAFT여야 한다."),   // lamda식을 쓰면 문자열연산을 성공시에만 하기 때문에 비용을 절감할 수 있음.
+      () -> assertTrue(studyTestDto.getLimit() > 0, "스터디 최대 참석 가능 인원은 0보다 커야 한다."),
       () -> assertTimeout(Duration.ofMillis(500), () -> {
-        new Study(10);
+        new StudyTestDto(10);
         Thread.sleep(300);
       }),
       () -> assertTimeoutPreemptively(Duration.ofMillis(500), () -> {
-        new Study(10);
+        new StudyTestDto(10);
         Thread.sleep(300);    // TODO ThreadLocal
       })
     );
@@ -65,8 +65,8 @@ class StudyTest {   // JUnit5에서는 public을 선언하지 않아도 된다.
   @Test
   @Disabled
   void creat_new_study_again() {
-    Study study = new Study(10);
-    assertNotNull(study);
+    StudyTestDto studyTestDto = new StudyTestDto(10);
+    assertNotNull(studyTestDto);
     System.out.println("create1 " + value++);
   }
 
@@ -90,8 +90,8 @@ class StudyTest {   // JUnit5에서는 public을 선언하지 않아도 된다.
       System.out.println("PROD");
     });
 
-    Study study = new Study(10);
-    assertNotNull(study);
+    StudyTestDto studyTestDto = new StudyTestDto(10);
+    assertNotNull(studyTestDto);
     System.out.println("create1");
   }
 
@@ -118,22 +118,22 @@ class StudyTest {   // JUnit5에서는 public을 선언하지 않아도 된다.
   @ParameterizedTest(name = "{index} {displayName} message={0}")
 //  @ValueSource(strings = {"날씨가", "많이", "추워지고", "있네요."})
   @ValueSource(ints = {10, 20, 40})
-  void parameterizedTest(@ConvertWith(StudyConverter.class) Study study) {
-    System.out.println(study.getLimit());
+  void parameterizedTest(@ConvertWith(StudyConverter.class) StudyTestDto studyTestDto) {
+    System.out.println(studyTestDto.getLimit());
   }
 
   @DisplayName("스터디 만들기")
   @ParameterizedTest(name = "{index} {displayName} message={0}")
   @CsvSource({"10, '자바 스터디'", "20, 스프링"})
-  void parameterizedTest2(@AggregateWith(StudyAggregator.class) Study study) {
-    System.out.println(study);
+  void parameterizedTest2(@AggregateWith(StudyAggregator.class) StudyTestDto studyTestDto) {
+    System.out.println(studyTestDto);
   }
 
   static class StudyAggregator implements ArgumentsAggregator {
 
     @Override
     public Object aggregateArguments(ArgumentsAccessor accessor, ParameterContext context) throws ArgumentsAggregationException {
-      return new Study(accessor.getInteger(0), accessor.getString(1));
+      return new StudyTestDto(accessor.getInteger(0), accessor.getString(1));
     }
   }
 
@@ -141,8 +141,8 @@ class StudyTest {   // JUnit5에서는 public을 선언하지 않아도 된다.
 
     @Override
     protected Object convert(Object source, Class<?> targetType) throws ArgumentConversionException {
-      assertEquals(Study.class, targetType, "Can only convert to Study");
-      return new Study(Integer.parseInt(source.toString()));
+      assertEquals(StudyTestDto.class, targetType, "Can only convert to Study");
+      return new StudyTestDto(Integer.parseInt(source.toString()));
     }
   }
 
