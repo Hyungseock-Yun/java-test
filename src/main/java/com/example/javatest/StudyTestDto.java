@@ -3,7 +3,7 @@ package com.example.javatest;
 import lombok.Data;
 
 @Data
-public class Study {
+public class StudyTestDto {
 
   private StudyStatus status = StudyStatus.DRAFT;
 
@@ -11,12 +11,12 @@ public class Study {
 
   private String name;
 
-  public Study(int limit, String name) {
+  public StudyTestDto(int limit, String name) {
     this.limit = limit;
     this.name = name;
   }
 
-  public Study(int limit) {
+  public StudyTestDto(int limit) {
     if (limit < 0) throw new IllegalStateException("limit은 0보다 커야 한다");
     this.limit = limit;
   }
