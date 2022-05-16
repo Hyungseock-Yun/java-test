@@ -16,6 +16,10 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.data:spring-data-jpa:2.6.4'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+//    testImplementation group: 'org.testcontainers', name: 'testcontainers', version: '1.17.1'
+    testImplementation 'org.testcontainers:junit-jupiter:1.17.1'
+    testImplementation 'org.testcontainers:postgresql:1.17.1'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
     // JUnit4를 사용하기 위한 의존성 주입

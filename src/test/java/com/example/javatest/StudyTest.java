@@ -14,12 +14,14 @@ import org.junit.jupiter.params.converter.ArgumentConversionException;
 import org.junit.jupiter.params.converter.ConvertWith;
 import org.junit.jupiter.params.converter.SimpleArgumentConverter;
 import org.junit.jupiter.params.provider.*;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.Duration;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.*;
 
+@SpringBootTest
 @ExtendWith(FindSlowTestExtension.class)
 //@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 //@TestInstance(TestInstance.Lifecycle.PER_CLASS)   // @BeforeAll, @AfterAll에 static을 붙이지 않아도 된다.
